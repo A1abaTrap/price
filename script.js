@@ -16,8 +16,8 @@ async function fetchExcelData(url) {
 // Hàm tải dữ liệu từ GitHub và hiển thị bảng
 async function loadDataAndCompare() {
     // Thay URL này bằng liên kết đến file trên GitHub của bạn
-    const urlYesterday = '';
-    const urlToday = '';
+    const urlYesterday = 'https://raw.githubusercontent.com/A1abaTrap/price/main/Gia_Hom_Qua.xlsx';
+    const urlToday = 'https://raw.githubusercontent.com/A1abaTrap/price/main/Gia_Hom_Nay.xlsx';
 
     try {
         dataYesterday = await fetchExcelData(urlYesterday);
