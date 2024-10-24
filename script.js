@@ -13,9 +13,8 @@ async function fetchExcelData(url) {
     return XLSX.utils.sheet_to_json(sheet); // Chuyển sheet thành JSON
 }
 
-// Hàm tải dữ liệu từ GitHub và hiển thị bảng
+// Hàm tải dữ liệu từ GitHub và so sánh giá dựa trên mã sản phẩm
 async function loadDataAndCompare() {
-    // Thay URL này bằng liên kết đến file trên GitHub của bạn
     const urlYesterday = 'https://raw.githubusercontent.com/A1abaTrap/price/main/Gia_Hom_Qua.xlsx';
     const urlToday = 'https://raw.githubusercontent.com/A1abaTrap/price/main/Gia_Hom_Nay.xlsx';
 
@@ -42,25 +41,33 @@ function getPriceDifference(todayPrice, yesterdayPrice) {
     }
 }
 
-// So sánh và hiển thị giá
+// So sánh và hiển thị dữ liệu trên bảng
 function comparePrices() {
     const tableBody = document.getElementById('productTable');
     tableBody.innerHTML = ''; // Xóa nội dung cũ
 
     dataToday.forEach(todayProduct => {
-        const yesterdayProduct = dataYesterday.find(p => p['Tên Sản Phẩm'] === todayProduct['Tên Sản Phẩm']);
-        const priceDifference = getPriceDifference(todayProduct['Đơn Giá'], yesterdayProduct ? yesterdayProduct['Đơn Giá'] : undefined);
+        // Tìm sản phẩm tương ứng trong bảng hôm qua theo mã sản phẩm
+        const yesterdayProduct = dataYesterday.find(p => p['Mã Sản Phẩm'] === todayProduct['Mã Sản Phẩm']);
+        
+        if (yesterdayProduct) { // Chỉ hiển thị nếu có mã sản phẩm trùng
+            const priceDifference = getPriceDifference(
+                todayProduct['Đơn Giá'], 
+                yesterdayProduct['Đơn Giá']
+            );
 
-        const row = `
-            <tr>
-                <td>${todayProduct['Tên Sản Phẩm']}</td>
-                <td>${todayProduct['Đơn Vị Tính']}</td>
-                <td>${yesterdayProduct ? yesterdayProduct['Đơn Giá'] : 'N/A'}</td>
-                <td>${todayProduct['Đơn Giá']}</td>
-                <td>${priceDifference}</td>
-            </tr>
-        `;
-        tableBody.innerHTML += row;
+            const row = `
+                <tr>
+                    <td>${todayProduct['Mã Sản Phẩm']}</td>
+                    <td>${todayProduct['Tên Sản Phẩm']}</td>
+                    <td>${todayProduct['Đơn Vị Tính']}</td>
+                    <td>${yesterdayProduct['Đơn Giá']}</td>
+                    <td>${todayProduct['Đơn Giá']}</td>
+                    <td>${priceDifference}</td>
+                </tr>
+            `;
+            tableBody.innerHTML += row;
+        }
     });
 }
 
