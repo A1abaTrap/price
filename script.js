@@ -15,17 +15,11 @@ async function fetchExcelData(url) {
 
 // Sắp xếp danh sách theo mã sản phẩm
 function sortByProductCode(data) {
-    console.log('Data before sorting:', data); // Ghi dữ liệu trước khi sắp xếp
-
     // Lọc ra các mục không có 'Mã Sản Phẩm'
     const filteredData = data.filter(item => item['Mã Sản Phẩm'] !== undefined);
 
     // Sắp xếp dữ liệu đã lọc
     return filteredData.sort((a, b) => {
-        if (a['Mã Sản Phẩm'] === undefined || b['Mã Sản Phẩm'] === undefined) {
-            console.error('Missing "Mã Sản Phẩm" in data:', a, b);
-            return 0; // Xem như bằng nhau để sắp xếp
-        }
         return a['Mã Sản Phẩm'].localeCompare(b['Mã Sản Phẩm']);
     });
 }
