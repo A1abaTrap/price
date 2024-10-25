@@ -15,16 +15,10 @@ async function fetchExcelData(url) {
 
 // Sắp xếp danh sách theo mã sản phẩm
 function sortByProductCode(data) {
-    // Lọc ra các mục không có 'Mã Sản Phẩm'
-    const filteredData = data.filter(item => item['Mã Sản Phẩm'] !== undefined);
-
-    // Sắp xếp dữ liệu đã lọc
-    return filteredData.sort((a, b) => {
-        return a['Mã Sản Phẩm'].localeCompare(b['Mã Sản Phẩm']);
-    });
+    return data.sort((a, b) => a['Mã  SP'].localeCompare(b['Mã  SP']));
 }
 
-// So sánh hai danh sách đã được sắp xếp
+// So sánh hai danh sách đã sắp xếp
 function compareSortedLists() {
     const tableBody = document.getElementById('productTable');
     tableBody.innerHTML = ''; // Xóa nội dung cũ
@@ -35,33 +29,33 @@ function compareSortedLists() {
         const yesterdayProduct = dataYesterday[i];
         const todayProduct = dataToday[j];
 
-        if (yesterdayProduct['Mã Sản Phẩm'] === todayProduct['Mã Sản Phẩm']) {
+        if (yesterdayProduct['Mã  SP'] === todayProduct['Mã  SP']) {
             // So sánh giá nếu mã sản phẩm trùng khớp
             const priceDifference = getPriceDifference(
-                todayProduct['Đơn Giá'], 
-                yesterdayProduct['Đơn Giá']
+                todayProduct['Giá Bán Đồng'], 
+                yesterdayProduct['Giá Bán Đồng']
             );
 
             const row = `
                 <tr>
-                    <td>${todayProduct['Mã Sản Phẩm']}</td>
-                    <td>${todayProduct['Tên Sản Phẩm']}</td>
-                    <td>${todayProduct['Đơn Vị Tính']}</td>
-                    <td>${yesterdayProduct['Đơn Giá']}</td>
-                    <td>${todayProduct['Đơn Giá']}</td>
+                    <td>${todayProduct['Mã  SP']}</td>
+                    <td>${todayProduct['Tên SP']}</td>
+                    <td>${todayProduct['Quy Cách']}</td>
+                    <td>${yesterdayProduct['Giá Bán Đồng']}</td>
+                    <td>${todayProduct['Giá Bán Đồng']}</td>
                     <td>${priceDifference}</td>
                 </tr>
             `;
             tableBody.innerHTML += row;
             i++; j++; // Tiến tới sản phẩm tiếp theo trong cả hai danh sách
-        } else if (yesterdayProduct['Mã Sản Phẩm'] < todayProduct['Mã Sản Phẩm']) {
+        } else if (yesterdayProduct['Mã  SP'] < todayProduct['Mã  SP']) {
             // Sản phẩm chỉ có trong bảng hôm qua
             const row = `
                 <tr>
-                    <td>${yesterdayProduct['Mã Sản Phẩm']}</td>
-                    <td>${yesterdayProduct['Tên Sản Phẩm']}</td>
-                    <td>${yesterdayProduct['Đơn Vị Tính']}</td>
-                    <td>${yesterdayProduct['Đơn Giá']}</td>
+                    <td>${yesterdayProduct['Mã  SP']}</td>
+                    <td>${yesterdayProduct['Tên SP']}</td>
+                    <td>${yesterdayProduct['Quy Cách']}</td>
+                    <td>${yesterdayProduct['Giá Bán Đồng']}</td>
                     <td>Không có trong bảng hôm nay</td>
                     <td>N/A</td>
                 </tr>
@@ -72,11 +66,11 @@ function compareSortedLists() {
             // Sản phẩm chỉ có trong bảng hôm nay
             const row = `
                 <tr>
-                    <td>${todayProduct['Mã Sản Phẩm']}</td>
-                    <td>${todayProduct['Tên Sản Phẩm']}</td>
-                    <td>${todayProduct['Đơn Vị Tính']}</td>
+                    <td>${todayProduct['Mã  SP']}</td>
+                    <td>${todayProduct['Tên SP']}</td>
+                    <td>${todayProduct['Quy Cách']}</td>
                     <td>Không có trong bảng hôm qua</td>
-                    <td>${todayProduct['Đơn Giá']}</td>
+                    <td>${todayProduct['Giá Bán Đồng']}</td>
                     <td>N/A</td>
                 </tr>
             `;
@@ -90,10 +84,10 @@ function compareSortedLists() {
         const product = dataYesterday[i++];
         const row = `
             <tr>
-                <td>${product['Mã Sản Phẩm']}</td>
-                <td>${product['Tên Sản Phẩm']}</td>
-                <td>${product['Đơn Vị Tính']}</td>
-                <td>${product['Đơn Giá']}</td>
+                <td>${product['Mã  SP']}</td>
+                <td>${product['Tên SP']}</td>
+                <td>${product['Quy Cách']}</td>
+                <td>${product['Giá Bán Đồng']}</td>
                 <td>Không có trong bảng hôm nay</td>
                 <td>N/A</td>
             </tr>
@@ -106,11 +100,11 @@ function compareSortedLists() {
         const product = dataToday[j++];
         const row = `
             <tr>
-                <td>${product['Mã Sản Phẩm']}</td>
-                <td>${product['Tên Sản Phẩm']}</td>
-                <td>${product['Đơn Vị Tính']}</td>
+                <td>${product['Mã  SP']}</td>
+                <td>${product['Tên SP']}</td>
+                <td>${product['Quy Cách']}</td>
                 <td>Không có trong bảng hôm qua</td>
-                <td>${product['Đơn Giá']}</td>
+                <td>${product['Giá Bán Đồng']}</td>
                 <td>N/A</td>
             </tr>
         `;
