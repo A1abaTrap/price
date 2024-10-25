@@ -1,33 +1,49 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
+<html lang="vi"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bảng So Sánh Giá Sản Phẩm</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>So Sánh Giá Sản Phẩm</h1>
-       <input type="text" id="searchInput" placeholder="Tìm sản phẩm...">
+<div class="container">
+    <h1>So Sánh Giá Sản Phẩm</h1>
+    <input type="text" id="searchInput" placeholder="Tìm sản phẩm..." onkeyup="filterProducts()" />
+    <h2>Sản Phẩm Đã Chọn</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Tên Sản Phẩm</th>
+                <th>Số Lượng</th>
+                <th>Giá Hôm Nay</th>
+                <th>Thành Tiền</th>
+                <th>Xóa</th>
+            </tr>
+        </thead>
+        <tbody id="selectedProductsTable"></tbody>
+    </table>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Mã Sản Phẩm</th>
-                    <th>Tên Sản Phẩm</th>
-                    <th>Đơn Vị Tính</th>
-                    <th>Giá Hôm Qua</th>
-                    <th>Giá Hôm Nay</th>
-                    <th>Chênh Lệch</th>
-                </tr>
-            </thead>
-            <tbody id="productTable">
-                <!-- Dữ liệu sẽ được chèn vào đây -->
-            </tbody>
-        </table>
-    </div>
+    <h3>Tổng Tiền: <span id="totalAmount">0 VND</span></h3>
+    <table>
+        <thead>
+            <tr>
+                <th style="display:none">Mã Sản Phẩm</th>
+                <th>Tên Sản Phẩm</th>
+                <th>Đơn Vị Tính</th>
+                <th>Giá Hôm Qua</th>
+                <th>Giá Hôm Nay</th>
+                <th>Chênh Lệch</th>
+                <th>Chọn</th>
+            </tr>
+        </thead>
+        <tbody id="productTable"></tbody>
+    </table>
+
+
+</div>
+
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="script.js"></script>
-</body>
-</html>
+
+
+</body></html>
