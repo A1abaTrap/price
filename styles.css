@@ -118,7 +118,7 @@ tbody tr:hover {
     }
 
     thead {
-        display: table-header-group; /* Giữ tiêu đề bảng hiển thị */
+        display: table; /* Giữ tiêu đề bảng hiển thị */
     }
 
     tbody {
