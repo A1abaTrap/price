@@ -1,9 +1,9 @@
-/* Thiết lập chung cho toàn bộ trang */
+/* Thiết lập chung */
 body {
     font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #e8f0f7; /* Màu nền dịu mắt */
+    background-color: #e8f0f7;
 }
 
 /* Container chính */
@@ -11,7 +11,7 @@ body {
     max-width: 1200px;
     margin: 20px auto;
     padding: 15px;
-    background-color: white;
+    background: #fff;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
 }
@@ -24,21 +24,39 @@ h1 {
     font-weight: 700;
 }
 
-/* Ô tìm kiếm */
+/* Input tìm kiếm và icon */
+.search-container {
+    position: relative;
+    max-width: 400px;
+    margin: 0 auto 20px;
+}
 #searchInput {
     width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
+    padding: 10px 40px 10px 10px;
+    font-size: 16px;
     border: 2px solid #3498db;
-    border-radius: 8px;
-    transition: border 0.3s;
+    border-radius: 5px;
+    transition: 0.3s;
 }
-
-/* Hiệu ứng khi tìm kiếm được focus */
+#clearSearch {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: #aaa;
+    cursor: pointer;
+    display: none;
+    user-select: none;
+    transition: color 0.2s;
+}
+#clearSearch:hover {
+    color: #333;
+}
 #searchInput:focus {
     border-color: #2980b9;
-    outline: none;
     box-shadow: 0 0 10px rgba(41, 128, 185, 0.5);
+    outline: none;
 }
 
 /* Bảng sản phẩm */
@@ -47,35 +65,28 @@ table {
     border-collapse: collapse;
     margin-bottom: 20px;
 }
-
 thead th {
-    background-color: #3498db;
+    background: #3498db;
     color: white;
     padding: 12px;
     text-align: left;
     font-size: 16px;
 }
-
 tbody td {
     padding: 10px;
     border-bottom: 1px solid #ddd;
     font-size: 15px;
 }
-
-/* Hàng chẵn có màu nền nhạt */
 tbody tr:nth-child(even) {
     background-color: #f0f9ff;
 }
+tbody tr:hover {
+    background-color: #dfeefb;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
 /* Phần sản phẩm đã chọn */
-.selected-products {
-    margin-top: 20px;
-}
-
-.selected-products table {
-    width: 100%;
-    margin-top: 10px;
-}
-
 .selected-products input[type="number"] {
     width: 60px;
     padding: 5px;
@@ -92,53 +103,38 @@ tbody tr:nth-child(even) {
     color: #e74c3c;
 }
 
-/* Hiệu ứng hover cho các hàng trong bảng */
-tbody tr:hover {
-    background-color: #dfeefb;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-/* Media Queries cho màn hình nhỏ */
+/* Responsive cho màn hình nhỏ */
 @media (max-width: 768px) {
     .container {
         padding: 10px;
     }
 
     table {
-        width: 100%;
-        border-collapse: collapse; /* Đảm bảo không có khoảng cách giữa các ô */
+        border-collapse: collapse;
     }
 
     thead {
-        display: table; /* Giữ tiêu đề bảng hiển thị */
+        display: table;
     }
 
     tbody {
-        display: block; /* Cho phép cuộn nếu cần */
-        max-height: 300px; /* Giới hạn chiều cao để có thể cuộn */
-        overflow-y: auto; /* Cho phép cuộn dọc */
+        display: block;
+        max-height: 300px;
+        overflow-y: auto;
     }
 
     tbody tr {
-        display: table; /* Giữ kiểu hiển thị hàng trong bảng */
-        width: 100%; /* Đảm bảo hàng chiếm toàn bộ chiều rộng */
-        border: 1px solid #ddd; /* Đường viền cho hàng */
+        display: table;
+        width: 100%;
+        border: 1px solid #ddd;
     }
 
     tbody td {
-        padding: 10px; /* Khoảng cách trong ô */
-        border-bottom: 1px solid #ddd; /* Đường viền dưới cho ô */
-        font-size: 15px; /* Kích thước chữ */
-    }
-
-    /* Hiệu ứng hover cho các hàng trong bảng */
-    tbody tr:hover {
-        background-color: #dfeefb; /* Màu nền khi hover */
-        cursor: pointer; /* Thay đổi con trỏ khi hover */
+        padding: 10px;
+        font-size: 15px;
     }
 
     .total-amount {
-        text-align: center; /* Canh giữa tổng tiền */
+        text-align: center;
     }
 }
