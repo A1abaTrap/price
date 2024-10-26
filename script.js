@@ -85,7 +85,7 @@ function renderSelectedProducts() {
             <td>${product['Tên SP']}</td>
             <td>
                 <input type="number" min="1" value="${product.quantity}" 
-                       onchange="updateQuantity(${index}, this.value)" />
+                       onchange="updateQuantity(${index}, this.value)" style="Width:50px; border:none"/>
             </td>
             <td>${formatCurrency(product['Giá Bán Đồng'])}</td>
             <td>${formatCurrency(product['Giá Bán Đồng'] * product.quantity)}</td>
