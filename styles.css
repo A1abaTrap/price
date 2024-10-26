@@ -66,13 +66,6 @@ tbody td {
 tbody tr:nth-child(even) {
     background-color: #f0f9ff;
 }
-
-/* Checkbox căn giữa */
-td input[type="checkbox"] {
-    display: block;
-    margin: auto;
-}
-
 /* Phần sản phẩm đã chọn */
 .selected-products {
     margin-top: 20px;
