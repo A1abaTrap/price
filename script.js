@@ -60,8 +60,12 @@ function renderSelectedProducts() {
     tableBody.innerHTML = selectedProducts.map((p, i) => `
         <tr onclick="removeSelectedProduct(${i})">
             <td>${p['Tên SP']}</td>
-            <td><input type="number" min="1" value="${p.quantity}" 
-                       onchange="updateQuantity(${i}, this.value)" style="width:50px; border:none"/></td>
+            <td>
+                <input type="number" min="1" value="${p.quantity}" 
+                       onchange="updateQuantity(${i}, this.value)" 
+                       onclick="event.stopPropagation()" 
+                       style="width:50px; border:none"/>
+            </td>
             <td>${formatCurrency(p['Giá Bán Đồng'])}</td>
             <td>${formatCurrency(p['Giá Bán Đồng'] * p.quantity)}</td>
         </tr>`).join('');
