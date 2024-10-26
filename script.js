@@ -8,7 +8,7 @@ async function fetchExcelData(url) {
     const arrayBuffer = await response.arrayBuffer();
     const workbook = XLSX.read(new Uint8Array(arrayBuffer), { type: 'array' });
 
-    const sheetName = workbook.SheetNames[0]; 
+    const sheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[sheetName];
 
     return XLSX.utils.sheet_to_json(sheet);
@@ -25,21 +25,19 @@ function compareSortedLists() {
     tableBody.innerHTML = '';
 
     dataToday.forEach(product => {
-        const row = `
-            <tr>
-                <td style="display:none">${product['Mã  SP']}</td>
-                <td>${product['Tên SP']}</td>
-                <td>${product['Quy Cách']}</td>
-                <td>${findPriceYesterday(product['Mã  SP'])}</td>
-                <td>${product['Giá Bán Đồng']}</td>
-                <td>${getPriceDifference(product)}</td>
-                <td>
-                    <input type="checkbox" value="${product['Mã  SP']}" 
-                           onchange="toggleProductSelection(this)" />
-                </td>
-            </tr>
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
+            <td style="display:none">${product['Mã  SP']}</td>
+            <td>${product['Tên SP']}</td>
+            <td>${product['Quy Cách']}</td>
+            <td>${findPriceYesterday(product['Mã  SP'])}</td>
+            <td>${product['Giá Bán Đồng']}</td>
+            <td>${getPriceDifference(product)}</td>
         `;
-        tableBody.innerHTML += row;
+
+        row.addEventListener('click', () => toggleProductSelection(product, row));
+        tableBody.appendChild(row);
     });
 }
 
@@ -61,15 +59,16 @@ function getPriceDifference(product) {
            difference < 0 ? `Giảm ${Math.abs(difference)} VND` : 'Không đổi';
 }
 
-// Hàm xử lý khi chọn/bỏ chọn sản phẩm
-function toggleProductSelection(checkbox) {
-    const productCode = checkbox.value;
-    const product = dataToday.find(p => p['Mã  SP'] === productCode);
+// Hàm xử lý khi chọn/bỏ chọn sản phẩm bằng cách click vào hàng
+function toggleProductSelection(product, row) {
+    const index = selectedProducts.findIndex(p => p['Mã  SP'] === product['Mã  SP']);
 
-    if (checkbox.checked) {
+    if (index === -1) {
         selectedProducts.push({ ...product, quantity: 1 });
+        row.classList.add('selected');
     } else {
-        selectedProducts = selectedProducts.filter(p => p['Mã  SP'] !== productCode);
+        selectedProducts.splice(index, 1);
+        row.classList.remove('selected');
     }
 
     renderSelectedProducts();
@@ -81,22 +80,41 @@ function renderSelectedProducts() {
     tableBody.innerHTML = '';
 
     selectedProducts.forEach((product, index) => {
-        const row = `
-            <tr>
-                <td>${product['Tên SP']}</td>
-                <td>
-                    <input type="number" min="1" value="${product.quantity}" 
-                           onchange="updateQuantity(${index}, this.value)" style="width:50px; text-align: center;border:none ;"/>
-                </td>
-                <td>${formatCurrency(product['Giá Bán Đồng'])}</td>
-                <td>${formatCurrency(product['Giá Bán Đồng'] * product.quantity)}</td>
-                <td><input type="checkbox" checked onchange="toggleProductSelection(this)" value="${product['Mã  SP']}" /></td>
-            </tr>
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${product['Tên SP']}</td>
+            <td>
+                <input type="number" min="1" value="${product.quantity}" 
+                       onchange="updateQuantity(${index}, this.value)" />
+            </td>
+            <td>${formatCurrency(product['Giá Bán Đồng'])}</td>
+            <td>${formatCurrency(product['Giá Bán Đồng'] * product.quantity)}</td>
         `;
-        tableBody.innerHTML += row;
+
+        row.addEventListener('click', () => removeSelectedProduct(index));
+        tableBody.appendChild(row);
     });
 
     updateTotalAmount();
+}
+
+// Xóa sản phẩm đã chọn khi click vào hàng trong bảng "Sản Phẩm Đã Chọn"
+function removeSelectedProduct(index) {
+    const productCode = selectedProducts[index]['Mã  SP'];
+
+    // Xóa sản phẩm khỏi danh sách đã chọn
+    selectedProducts.splice(index, 1);
+
+    // Bỏ hiệu ứng "selected" trên bảng chính nếu tồn tại
+    const productRows = document.getElementById('productTable').getElementsByTagName('tr');
+    for (let row of productRows) {
+        if (row.cells[0].textContent === productCode) {
+            row.classList.remove('selected');
+            break;
+        }
+    }
+
+    renderSelectedProducts();
 }
 
 // Cập nhật số lượng sản phẩm
@@ -107,7 +125,7 @@ function updateQuantity(index, quantity) {
 
 // Cập nhật tổng tiền
 function updateTotalAmount() {
-    const total = selectedProducts.reduce((sum, product) => 
+    const total = selectedProducts.reduce((sum, product) =>
         sum + product['Giá Bán Đồng'] * product.quantity, 0);
     document.getElementById('totalAmount').textContent = formatCurrency(total);
 }
