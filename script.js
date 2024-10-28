@@ -8,6 +8,9 @@ async function fetchExcelData(url) {
     return XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
 }
 
+// Sắp xếp theo mã sản phẩm
+const sortByProductCode = data => data.sort((a, b) => a['Mã  SP'].localeCompare(b['Mã  SP']));
+
 // Gộp dữ liệu từ hôm qua và hôm nay, loại bỏ mã trùng lặp
 function mergeProductData() {
     const allProducts = [...dataYesterday, ...dataToday];
