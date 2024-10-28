@@ -11,43 +11,72 @@ async function fetchExcelData(url) {
 // Sắp xếp theo mã sản phẩm
 const sortByProductCode = data => data.sort((a, b) => a['Mã  SP'].localeCompare(b['Mã  SP']));
 
-// Gộp dữ liệu từ hôm qua và hôm nay, loại bỏ mã trùng lặp
+
+// Gộp dữ liệu từ hôm qua và hôm nay
 function mergeProductData() {
-    const allProducts = [...dataYesterday, ...dataToday];
     const productMap = new Map();
 
-    allProducts.forEach(product => {
-        const code = product['Mã  SP'];
-        productMap.set(code, product); // Nếu trùng, ưu tiên sản phẩm sau cùng (ngày hôm nay)
+    // Thêm sản phẩm của hôm qua vào Map
+    dataYesterday.forEach(product => {
+        productMap.set(product['Mã  SP'], {
+            code: product['Mã  SP'],
+            name: product['Tên SP'],
+            spec: product['Quy Cách'],
+            oldPrice: product['Giá Bán Đồng'],
+            newPrice: 'Không có'
+        });
+    });
+
+    // Cập nhật sản phẩm từ hôm nay hoặc thêm mới vào Map
+    dataToday.forEach(product => {
+        if (productMap.has(product['Mã  SP'])) {
+            productMap.get(product['Mã  SP']).newPrice = product['Giá Bán Đồng'];
+        } else {
+            productMap.set(product['Mã  SP'], {
+                code: product['Mã  SP'],
+                name: product['Tên SP'],
+                spec: product['Quy Cách'],
+                oldPrice: 'Không có',
+                newPrice: product['Giá Bán Đồng']
+            });
+        }
     });
 
     mergedData = Array.from(productMap.values());
 }
 
+
+
 // Hiển thị danh sách sản phẩm
 function renderProductList() {
     const tableBody = document.getElementById('productTable');
     tableBody.innerHTML = mergedData.map(product => `
-        <tr onclick="toggleProductSelection('${product['Mã  SP']}', this)">
-            <td style="display:none">${product['Mã  SP']}</td>
-            <td>${product['Tên SP']}</td>
-            <td>${product['Quy Cách']}</td>
-            <td>${findPriceYesterday(product['Mã  SP'])}</td>
-            <td>${product['Giá Bán Đồng'] || 'Không có'}</td>
+        <tr onclick="toggleProductSelection('${product.code}', this)">
+            <td style="display:none">${product.code}</td>
+            <td>${product.name}</td>
+            <td>${product.spec}</td>
+            <td>${product.oldPrice}</td>
+            <td>${product.newPrice}</td>
             <td>${getPriceDifference(product)}</td>
         </tr>`).join('');
 }
+
 
 // Tìm giá hôm qua
 const findPriceYesterday = code => dataYesterday.find(p => p['Mã  SP'] === code)?.['Giá Bán Đồng'] || 'Không có';
 
 // Tính chênh lệch giá
 function getPriceDifference(product) {
-    const oldPrice = findPriceYesterday(product['Mã  SP']);
-    const diff = product['Giá Bán Đồng'] - oldPrice;
-    return oldPrice === 'Không có' ? 'Không có dữ liệu' :
-           diff > 0 ? `Tăng ${diff} VND` : diff < 0 ? `Giảm ${-diff} VND` : 'Không đổi';
+    const { oldPrice, newPrice } = product;
+
+    if (oldPrice === 'Không có' || newPrice === 'Không có') {
+        return 'Không có dữ liệu';
+    }
+
+    const diff = newPrice - oldPrice;
+    return diff > 0 ? `Tăng ${diff} VND` : diff < 0 ? `Giảm ${-diff} VND` : 'Không đổi';
 }
+
 
 // Thêm hoặc xóa sản phẩm đã chọn
 function toggleProductSelection(code, row) {
