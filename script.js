@@ -80,36 +80,43 @@ function getPriceDifference(product) {
 
 // Thêm hoặc xóa sản phẩm đã chọn
 function toggleProductSelection(code, row) {
-    const index = selectedProducts.findIndex(p => p['Mã  SP'] === code);
+    const index = selectedProducts.findIndex(p => p.code === code);
     index === -1 ? addProduct(code, row) : removeProduct(index, row);
     renderSelectedProducts();
 }
 
 function addProduct(code, row) {
-    const product = mergedData.find(p => p['Mã  SP'] === code);
-    selectedProducts.push({ ...product, quantity: 1 });
-    row.classList.add('selected');
+    const product = mergedData.find(p => p.code === code);
+    if (product) {
+        selectedProducts.push({ ...product, quantity: 1 });
+        row.classList.add('selected');
+    }
 }
 
 function removeProduct(index, row) {
+    const productCode = selectedProducts[index].code;
     selectedProducts.splice(index, 1);
-    row.classList.remove('selected');
+    document.querySelectorAll('#productTable tr').forEach(row => {
+        if (row.cells[0].textContent === productCode) row.classList.remove('selected');
+    });
+    renderSelectedProducts();
 }
+
 
 // Hiển thị sản phẩm đã chọn
 function renderSelectedProducts() {
     const tableBody = document.getElementById('selectedProductsTable');
     tableBody.innerHTML = selectedProducts.map((p, i) => `
         <tr onclick="removeSelectedProduct(${i})">
-            <td>${p['Tên SP']}</td>
+            <td>${p.name}</td>
             <td>
                 <input type="number" min="0.1" step="0.1" value="${p.quantity}" 
                        onchange="updateQuantity(${i}, this.value)" 
                        onclick="event.stopPropagation()" 
                        style="width:50px; border:none"/>
             </td>
-            <td>${formatCurrency(p['Giá Bán Đồng'])}</td>
-            <td>${formatCurrency(p['Giá Bán Đồng'] * p.quantity)}</td>
+            <td>${formatCurrency(p.newPrice)}</td>
+            <td>${formatCurrency(p.newPrice * p.quantity)}</td>
         </tr>`).join('');
     updateTotalAmount();
 }
@@ -124,24 +131,31 @@ function removeSelectedProduct(index) {
     renderSelectedProducts();
 }
 
-// Cập nhật số lượng và tổng tiền
+// Cập nhật số lượng và làm mới bảng
 const updateQuantity = (index, value) => {
     const quantity = parseFloat(value);
     if (!isNaN(quantity) && quantity > 0) {
         selectedProducts[index].quantity = quantity;
     } else {
-        selectedProducts[index].quantity = 1;
+        selectedProducts[index].quantity = 1; // Mặc định 1 nếu giá trị không hợp lệ
     }
     renderSelectedProducts();
 };
 
+// Cập nhật tổng tiền
 const updateTotalAmount = () => {
-    const total = selectedProducts.reduce((sum, p) => sum + p['Giá Bán Đồng'] * p.quantity, 0);
+    const total = selectedProducts.reduce((sum, p) => {
+        const price = parseFloat(p.newPrice) || 0; // Lấy đúng thuộc tính newPrice
+        return sum + price * p.quantity;
+    }, 0); // Khởi tạo tổng là 0
+
     document.getElementById('totalAmount').textContent = formatCurrency(total);
 };
 
+
 // Định dạng tiền tệ Việt Nam
-const formatCurrency = amount => amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+const formatCurrency = amount => 
+    amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
 
 // Lọc sản phẩm theo tìm kiếm
 function filterProducts() {
@@ -166,13 +180,16 @@ async function loadDataAndCompare() {
             fetchExcelData('https://raw.githubusercontent.com/A1abaTrap/price/main/Gia_Hom_Qua.xlsx'),
             fetchExcelData('https://raw.githubusercontent.com/A1abaTrap/price/main/Gia_Hom_Nay.xlsx')
         ]);
+
         dataYesterday = sortByProductCode(yesterday);
         dataToday = sortByProductCode(today);
-        mergeProductData(); // Gộp dữ liệu
-        renderProductList(); // Hiển thị danh sách sản phẩm đã gộp
+        mergeProductData(); // Gộp dữ liệu từ hôm qua và hôm nay
+        renderProductList(); // Hiển thị danh sách sản phẩm
+
     } catch (error) {
         console.error('Lỗi khi tải dữ liệu:', error);
     }
 }
+
 
 window.onload = loadDataAndCompare;
