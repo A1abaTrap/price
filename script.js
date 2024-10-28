@@ -1,4 +1,4 @@
-let dataYesterday = [], dataToday = [], selectedProducts = [];
+let dataYesterday = [], dataToday = [], mergedData = [], selectedProducts = [];
 
 // Đọc file Excel và chuyển thành JSON
 async function fetchExcelData(url) {
@@ -8,19 +8,29 @@ async function fetchExcelData(url) {
     return XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
 }
 
-// Sắp xếp theo mã sản phẩm
-const sortByProductCode = data => data.sort((a, b) => a['Mã  SP'].localeCompare(b['Mã  SP']));
+// Gộp dữ liệu từ hôm qua và hôm nay, loại bỏ mã trùng lặp
+function mergeProductData() {
+    const allProducts = [...dataYesterday, ...dataToday];
+    const productMap = new Map();
 
-// So sánh và hiển thị danh sách sản phẩm
-function compareSortedLists() {
+    allProducts.forEach(product => {
+        const code = product['Mã  SP'];
+        productMap.set(code, product); // Nếu trùng, ưu tiên sản phẩm sau cùng (ngày hôm nay)
+    });
+
+    mergedData = Array.from(productMap.values());
+}
+
+// Hiển thị danh sách sản phẩm
+function renderProductList() {
     const tableBody = document.getElementById('productTable');
-    tableBody.innerHTML = dataToday.map(product => `
+    tableBody.innerHTML = mergedData.map(product => `
         <tr onclick="toggleProductSelection('${product['Mã  SP']}', this)">
             <td style="display:none">${product['Mã  SP']}</td>
             <td>${product['Tên SP']}</td>
             <td>${product['Quy Cách']}</td>
             <td>${findPriceYesterday(product['Mã  SP'])}</td>
-            <td>${product['Giá Bán Đồng']}</td>
+            <td>${product['Giá Bán Đồng'] || 'Không có'}</td>
             <td>${getPriceDifference(product)}</td>
         </tr>`).join('');
 }
@@ -44,7 +54,7 @@ function toggleProductSelection(code, row) {
 }
 
 function addProduct(code, row) {
-    const product = dataToday.find(p => p['Mã  SP'] === code);
+    const product = mergedData.find(p => p['Mã  SP'] === code);
     selectedProducts.push({ ...product, quantity: 1 });
     row.classList.add('selected');
 }
@@ -88,10 +98,11 @@ const updateQuantity = (index, value) => {
     if (!isNaN(quantity) && quantity > 0) {
         selectedProducts[index].quantity = quantity;
     } else {
-        selectedProducts[index].quantity = 1; // Mặc định 1 nếu giá trị không hợp lệ
+        selectedProducts[index].quantity = 1;
     }
     renderSelectedProducts();
 };
+
 const updateTotalAmount = () => {
     const total = selectedProducts.reduce((sum, p) => sum + p['Giá Bán Đồng'] * p.quantity, 0);
     document.getElementById('totalAmount').textContent = formatCurrency(total);
@@ -125,7 +136,8 @@ async function loadDataAndCompare() {
         ]);
         dataYesterday = sortByProductCode(yesterday);
         dataToday = sortByProductCode(today);
-        compareSortedLists();
+        mergeProductData(); // Gộp dữ liệu
+        renderProductList(); // Hiển thị danh sách sản phẩm đã gộp
     } catch (error) {
         console.error('Lỗi khi tải dữ liệu:', error);
     }
