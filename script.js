@@ -61,7 +61,7 @@ function renderSelectedProducts() {
         <tr onclick="removeSelectedProduct(${i})">
             <td>${p['Tên SP']}</td>
             <td>
-                <input type="number" min="1" value="${p.quantity}" 
+                <input type="number" min="0.1" step="0.1" value="${p.quantity}" 
                        onchange="updateQuantity(${i}, this.value)" 
                        onclick="event.stopPropagation()" 
                        style="width:50px; border:none"/>
@@ -84,7 +84,12 @@ function removeSelectedProduct(index) {
 
 // Cập nhật số lượng và tổng tiền
 const updateQuantity = (index, value) => {
-    selectedProducts[index].quantity = parseInt(value);
+    const quantity = parseFloat(value);
+    if (!isNaN(quantity) && quantity > 0) {
+        selectedProducts[index].quantity = quantity;
+    } else {
+        selectedProducts[index].quantity = 1; // Mặc định 1 nếu giá trị không hợp lệ
+    }
     renderSelectedProducts();
 };
 const updateTotalAmount = () => {
